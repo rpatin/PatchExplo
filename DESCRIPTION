@@ -1,10 +1,10 @@
 Package: PatchExplo
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Describing Central Place Exploration
 Version: 0.1
 Date: 2016-07-05
 Authors@R: c(
-    person("Rémi", "Patin", , "remi.patin@cefe.cnrs.fr", c("aut", "cre")))
+    person("Rémi", "Patin", "remi.patin@cefe.cnrs.fr", c("aut", "cre")))
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyData: TRUE
