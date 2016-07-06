@@ -1,7 +1,7 @@
 Package: PatchExplo
 Type: Package
 Title: Describing Central Place Exploration
-Version: 0.1
+Version: 0.0.0.9000
 Date: 2016-07-05
 Authors@R: c(
     person("Rémi", "Patin", , "remi.patin@cefe.cnrs.fr", c("aut", "cre")))
@@ -9,3 +9,11 @@ Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyData: TRUE
 RoxygenNote: 5.0.1.9000
+Depends:
+  R (>= 3.3.0)
+Imports:
+  plyr (>= 1.8.4),
+  dplyr (>= 0.4.3),
+  sampSurf (>= 0.7-3),
+  rgeos (>= 0.3-19),
+  sp (>= 1.2-3)
