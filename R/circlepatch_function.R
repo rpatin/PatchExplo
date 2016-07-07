@@ -12,22 +12,22 @@
 # proj4string(pump)=UTMstring
 # waterholes <- pump
 
-
+# nptsPerimeter = 100
 generate_circle_patch <- function(central_point,maxdist=10000,binsize=1000,nptsPerimeter=100,projstring)
 {
-  centerPoints=c("x"=WH@coords[1,1],"y"=WH@coords[1,2])
+  centerPoints=c("x"=central_point@coords[1,1],"y"=central_point@coords[1,2])
   names(centerPoints) <- c("x","y")
   PatchCircles <- list()
 
-  StartCircle <- sampSurf::spCircle(centerPoint=centerPoints,radius=BinSize,nptsPerimeter=nptsPerimeter,spUnits=projstring)$spCircle
-  proj4string(StartCircle)<- projstring
+  StartCircle <- sampSurf::spCircle(centerPoint=centerPoints,radius=binsize,nptsPerimeter=nptsPerimeter,spUnits=CRS(projstring))$spCircle
+  sp::proj4string(StartCircle)<- projstring
 
-  PatchCircles[[paste(BinSize)]] <- list("UnExplored"=StartCircle,"Explored"=NA)
+  PatchCircles[[paste(binsize)]] <- list("UnExplored"=StartCircle,"Explored"=NA)
 
-  for(dist in seq(2*BinSize,maxDist,by=BinSize))
+  for(dist in seq(2*binsize,maxdist,by=binsize))
   {
-    large <- sampSurf::spCircle(centerPoint=centerPoints,radius=dist,nptsPerimeter=nptsPerimeter,spUnits=projstring)$spCircle
-    small <- sampSurf::spCircle(centerPoint=centerPoints,radius=dist-BinSize,nptsPerimeter=nptsPerimeter,spUnits=projstring)$spCircle
+    large <- sampSurf::spCircle(centerPoint=centerPoints,radius=dist,nptsPerimeter=nptsPerimeter,spUnits=CRS(projstring))$spCircle
+    small <- sampSurf::spCircle(centerPoint=centerPoints,radius=dist-binsize,nptsPerimeter=nptsPerimeter,spUnits=CRS(projstring))$spCircle
     Circle <- rgeos::gDifference(large,small)
     sp::proj4string(Circle) <- projstring
     PatchCircles[[paste(dist)]] <- list("UnExplored"=Circle,"Explored"=NA)
@@ -35,3 +35,4 @@ generate_circle_patch <- function(central_point,maxdist=10000,binsize=1000,nptsP
   class(PatchCircles)<- "circlepatch"
   return(PatchCircles)
 }
+

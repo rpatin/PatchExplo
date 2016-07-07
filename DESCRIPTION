@@ -16,4 +16,7 @@ Imports:
   dplyr (>= 0.4.3),
   sampSurf (>= 0.7-3),
   rgeos (>= 0.3-19),
-  sp (>= 1.2-3)
+  sp (>= 1.2-3),
+  ggplot2 (>= 2.1.0),
+  gridExtra (>= 2.2.1),
+  reshape2 (>= 1.4.1)
