@@ -6,11 +6,11 @@
 \usage{
 \method{plot}{summary.circlepatch}(x, xlab = "Distance to waterhole",
   ylab = "Explored Area", ncol = 2, current = T, marginal = T,
-  total = T, wait = T)
+  total = T, wait = T, title = NULL)
 
 \method{plot}{summary.circlepatch}(x, xlab = "Distance to waterhole",
   ylab = "Explored Area", ncol = 2, current = T, marginal = T,
-  total = T, wait = T)
+  total = T, wait = T, title = NULL)
 }
 \arguments{
 \item{x}{a \code{summary.circlepatch} object}

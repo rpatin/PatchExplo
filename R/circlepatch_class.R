@@ -49,7 +49,7 @@ plot.circlepatch <- function(x,border='black',col='red',background=rgb(1,1,1,alp
 
 #' Summary method for \code{circlepatch} object
 #'@rdname circlepatch
-#'@import magrittr `%>%`
+#'@importFrom magrittr %>%
 
 summary.circlepatch <- function(x){
   listdist <- as.numeric(names(x))

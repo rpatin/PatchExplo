@@ -74,15 +74,24 @@ summary.exploration <- function(x){
 #' Used to build its summary
 #' @import ggplot2
 #' @param x a \code{summary.exploration} object
+#'@importFrom magrittr %>%
 
 # x <- summary(test.explo)
 
-plot.summary.circlepatch <- function(x,xlab="Distance to waterhole",ylab="Explored Area",ncol=2,current=T,marginal=T,total=T,wait=T){
+plot.summary.exploration <- function(x,xlab="Distance to waterhole",ylab="Explored Area",ncol=2,current=T,marginal=T,wait=T,title=NULL){
   if(current){
-    ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_Explored),stat='identity') + xlab(xlab)+ylab(ylab)+facet_wrap(~day)
+    g <- ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_Explored),stat='identity') + xlab(xlab)+ylab(ylab)+facet_wrap(~day)+ggtitle(title)
+    gridExtra::grid.arrange(g)
     wait_next_graph(wait)
-    ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_ExploredPercent),stat='identity')+ xlab(xlab)+ylab(paste(ylab," (Percent)"))+facet_wrap(~day)
+    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_ExploredPercent),stat='identity')+ xlab(xlab)+ylab(paste(ylab," (Percent)"))+facet_wrap(~day)+ggtitle(title)
+    gridExtra::grid.arrange(g)
     wait_next_graph(wait)
   }
-
+  if(marginal){
+    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=marginal_Explored,fill=factor(day)),stat='identity') + xlab(xlab)+ylab(ylab)+ggtitle(title)
+    gridExtra::grid.arrange(g)
+    wait_next_graph(wait)
+    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=marginal_ExploredPercent,fill=factor(day)),stat='identity')+ xlab(xlab)+ylab(paste(ylab," (Percent)"))+ggtitle(title)
+    gridExtra::grid.arrange(g)
+  }
 }
