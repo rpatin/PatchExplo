@@ -9,7 +9,8 @@
 \usage{
 \method{print}{circlepatch}(x)
 
-\method{plot}{circlepatch}(x, border = "black", col = "red", add = F)
+\method{plot}{circlepatch}(x, border = "black", col = "red",
+  background = rgb(1, 1, 1, alpha = 1), add = F, main = NULL)
 
 \method{summary}{circlepatch}(x)
 }
