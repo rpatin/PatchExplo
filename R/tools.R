@@ -5,16 +5,26 @@
 #'
 #' @param zone one element of a \code{circlepatch} object
 
+# for(i in 1:length(x)){
+#   zone2data(x[[i]])
+# }
+# zone <- x[[20]]
+
 zone2data <- function(zone){
   if(class(zone$UnExplored) == "logical"){
-    return(data.frame("ExploredPercent"=100,"Explored"=rgeos::gArea(zone$Explored)))
+    if(class(zone$Explored) == "logical"){
+      return(data.frame("ExploredPercent"=0,"Explored"=0))
+    } else {
+      return(data.frame("ExploredPercent"=rgeos::gArea(zone$Explored)/rgeos::gArea(zone$Total),"Explored"=rgeos::gArea(zone$Explored)))
+    }
   }else{
     if(class(zone$Explored) == "logical"){
       return(data.frame("ExploredPercent"=0,"Explored"=0))
     }else{
       explored <- rgeos::gArea(zone$Explored)
       unexplored <- rgeos::gArea(zone$UnExplored)
-      return(data.frame("ExploredPercent"=100*explored/(explored+unexplored),"Explored"=explored))
+      total <- rgeos::gArea(zone$Total)
+      return(data.frame("ExploredPercent"=100*explored/(total),"Explored"=explored))
     }
   }
 }

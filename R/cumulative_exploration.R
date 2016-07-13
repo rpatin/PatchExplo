@@ -17,26 +17,31 @@
 #'   \code{$name} in data slot.
 #' @examples
 #' explore(data,buffer=100,maxdist=10000,binsize=1000,projstring,waterholes)
+#' @export
 
 # library(rgdal)
 # library(sp)
 #
 # source("../../UTM35S.R")
-# lions <- readRDS("../../../data/Hwange/Formatted/NightLionsTest.Rds")
-# data <- lions[[1]]
+# lions <- readRDS("../../../data/Hwange/Formatted/Lions/Test_Night_Explorations")
+# data <- lions
 # pump=readOGR(dsn="../../../data/Hwange/Raw/Waterholes/waterhole_park_update2_Hugo_2014.shp",layer="waterhole_park_update2_Hugo_2014")
 # pump@data$pump[229]="pan"
 # pump=pump[pump@data$pump == "pump",]
 # proj4string(pump)=UTMstring
 # waterholes <- pump
-# data <- lions[[1]]
 #
 # buffer=200
 # maxdist=10000
-# binsize=1000
+# binsize=100
 # projstring = UTMstring
 #
-# test.explo <- explore(data,buffer=200,binsize=5000,projstring = UTMstring,waterholes = waterholes)
+# test.explo <- explore(data,buffer=200,binsize=100,projstring = UTMstring,waterholes = waterholes)
+#
+# plot(test.explo,type="marginal")
+# str(test.explo,max.level = 1)
+# explo.summary <- summary(test.explo)
+# plot(explo.summary)
 
 explore <- function(data,buffer=100,maxdist=10000,binsize=1000,projstring,waterholes)
 {
@@ -64,38 +69,39 @@ explore <- function(data,buffer=100,maxdist=10000,binsize=1000,projstring,waterh
                                    marginal=F)
 
   x$circlepatches[[1]] <- list("total"=ExploredDay,
-                                         "current"=ExploredDay,
-                                         "marginal"=ExploredDay)
+                               "current"=ExploredDay,
+                               "marginal"=ExploredDay)
 
   CumulativeExploredDay <- ExploredDay
-
-  for(i in 2:length(listindex)){
-    # print(i)
-    night <- dplyr::filter(data,night=="night",index==listindex[i])
-    MarginalExploredDay <- explore_one_night(night=night,
+  if(length(listindex)>1){
+    for(i in 2:length(listindex)){
+      # print(i)
+      night <- dplyr::filter(data,night=="night",index==listindex[i])
+      MarginalExploredDay <- explore_one_night(night=night,
                                                central_point=central_point,
                                                already_explored=CumulativeExploredDay,
                                                buffer=buffer,
                                                projstring=projstring,
                                                marginal=T)
 
-    CumulativeExploredDay <- explore_one_night(night=night,
-                                               central_point=central_point,
-                                               already_explored=CumulativeExploredDay,
-                                               buffer=buffer,
-                                               projstring=projstring,
-                                               marginal=F)
+      CumulativeExploredDay <- explore_one_night(night=night,
+                                                 central_point=central_point,
+                                                 already_explored=CumulativeExploredDay,
+                                                 buffer=buffer,
+                                                 projstring=projstring,
+                                                 marginal=F)
 
-    ExploredDay <- explore_one_night(night=night,
-                                               central_point=central_point,
-                                               already_explored=BeginPatch,
-                                               buffer=buffer,
-                                               projstring=projstring,
-                                               marginal=F)
+      ExploredDay <- explore_one_night(night=night,
+                                       central_point=central_point,
+                                       already_explored=BeginPatch,
+                                       buffer=buffer,
+                                       projstring=projstring,
+                                       marginal=F)
 
-    x$circlepatches[[i]] <- list("total"=CumulativeExploredDay,
-                                           "current"=ExploredDay,
-                                           "marginal"=MarginalExploredDay)
+      x$circlepatches[[i]] <- list("total"=CumulativeExploredDay,
+                                   "current"=ExploredDay,
+                                   "marginal"=MarginalExploredDay)
+    }
   }
   names(x$circlepatches) <- seq(1,x$nday)
   return(x)
@@ -136,9 +142,10 @@ explore_one_night <- function(night,central_point,already_explored,buffer=100,pr
   #   plot(newExplored,col='orange',add=T)
   #   plot(zone$Explored,col='yellow')
   # already_explored <- ExploredDay
+  # zone <- already_explored[[1]]
 
   Explored.list <- lapply(already_explored,function(zone){
-    # plot(zone$UnExplored,add=T)
+    # plot(zone$UnExplored,add=T,col='red')
     if (class(zone$UnExplored) != "logical")
     {
       # plot(zone$UnExplored,add=T,col='red')
@@ -146,12 +153,18 @@ explore_one_night <- function(night,central_point,already_explored,buffer=100,pr
       if(class(newUnexplored)=="SpatialCollections"){
         newUnexplored <- newUnexplored@polyobj
       }
-      newUnexplored <- prevent_invalid_geometry(newUnexplored)
-      # plot(newUnexplored,add=T,col='grey')
+
       newExplored = rgeos::gIntersection(zone$UnExplored,SplineBuffer)
+
+      # plot(newUnexplored,add=T,col='grey')
       # plot(newExplored,add=T,col='red')
-      if(is.null(newUnexplored)) newUnexplored <- NA
+      if(is.null(newUnexplored)){
+        newUnexplored <- NA
+      } else {
+        newUnexplored <- prevent_invalid_geometry(newUnexplored)
+      }
       if(is.null(newExplored)) newExplored <- NA
+
 
       if (class(zone$Explored) != "logical"){
         if (class(newExplored) == "logical"){
@@ -173,7 +186,7 @@ explore_one_night <- function(night,central_point,already_explored,buffer=100,pr
           }
         }
       }
-      return(list("UnExplored"=newUnexplored,"Explored"=newExplored))
+      return(list("Total"=zone$Total,"UnExplored"=newUnexplored,"Explored"=newExplored))
     } else {
       if (marginal == T){
         zone$Explored <- NA

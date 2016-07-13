@@ -26,23 +26,24 @@ print.circlepatch <- function(x){
 
 #' Plot object of \code{circlepatch} class
 #' @rdname circlepatch
-
-plot.circlepatch <- function(x,border='black',col='red',background=rgb(1,1,1,alpha=1) ,add=F,main=NULL){
+# x <- x$circlepatches[[i]]$marginal
+plot.circlepatch <- function(x,border=rgb(1,1,1,alpha=1),col='red',background=rgb(1,1,1,alpha=1) ,add=F,main=NULL){
   listdist <- as.numeric(names(x))
   maxdist <- max(listdist)
   binsize <- unique(diff(listdist))
   if(length(binsize)>1) stop("Object corrupted, binsize not constant.")
   nbins <- length(listdist)
 
-  plot(x[[nbins]]$UnExplored,col=background,border=border,add=add,main=main)
+  plot(x[[nbins]]$UnExplored,col=background,border='black',add=add,main=main)
 
   if (class(x[[nbins]]$Explored) != 'logical'){
     plot(x[[nbins]]$Explored,add=T,col=col,border=border)
     }
   for (i in 1:(nbins-1)){
-    plot(x[[i]]$UnExplored,add=T,col=background,border=border)
+    if (class(x[[i]]$UnExplored) != 'logical') {
+      plot(x[[i]]$UnExplored,add=T,col=background,border=border)    }
     if (class(x[[i]]$Explored) != 'logical') {
-      plot(x[[i]]$Explored,add=T,col=col,border=border)
+      plot(x[[i]]$Explored,add=T,col=col,border=col)
     }
   }
 }
@@ -50,6 +51,11 @@ plot.circlepatch <- function(x,border='black',col='red',background=rgb(1,1,1,alp
 #' Summary method for \code{circlepatch} object
 #'@rdname circlepatch
 #'@importFrom magrittr %>%
+# x <- test.explo$circlepatches[[3]]$marginal
+# for(i in 1:5){
+#   summary(test.explo$circlepatches[[i]]$marginal)
+# }
+#  summary(x)
 
 summary.circlepatch <- function(x){
   listdist <- as.numeric(names(x))
@@ -80,4 +86,12 @@ plot.summary.circlepatch <- function(x,xlab="Distance to waterhole",ylab="Explor
   g1 <- ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=Explored),stat='identity') + xlab(xlab)+ylab(ylab)
   g2 <- ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=ExploredPercent),stat='identity')+ xlab(xlab)+ylab(paste(ylab," (Percent)"))
   gridExtra::grid.arrange(g1,g2,ncol=ncol)
+}
+
+#' Print method for \code{summary.circlepatch} object
+#'
+#' @param x a \code{summary.circlepatch} object
+
+print.summary.circlepatch <- function(x){
+  str(x,max.level=2)
 }

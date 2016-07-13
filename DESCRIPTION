@@ -8,15 +8,15 @@ Authors@R: c(
 Description: More about what it does (maybe more than one line)
 License: What license is it under?
 LazyData: TRUE
-RoxygenNote: 5.0.1.9000
+RoxygenNote: 5.0.1
 Depends:
-  R (>= 3.3.0)
+    R (>= 3.2.0)
 Imports:
-  plyr (>= 1.8.4),
-  dplyr (>= 0.4.3),
-  sampSurf (>= 0.7-3),
-  rgeos (>= 0.3-19),
-  sp (>= 1.2-3),
-  ggplot2 (>= 2.1.0),
-  gridExtra (>= 2.2.1),
-  reshape2 (>= 1.4.1)
+    plyr (>= 1.8.4),
+    dplyr (>= 0.4.3),
+    sampSurf (>= 0.7-3),
+    rgeos (>= 0.3-19),
+    sp (>= 1.2-3),
+    ggplot2 (>= 2.1.0),
+    gridExtra (>= 2.2.1),
+    reshape2 (>= 1.4.1)

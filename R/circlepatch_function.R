@@ -22,7 +22,8 @@ generate_circle_patch <- function(central_point,maxdist=10000,binsize=1000,nptsP
   StartCircle <- sampSurf::spCircle(centerPoint=centerPoints,radius=binsize,nptsPerimeter=nptsPerimeter,spUnits=CRS(projstring))$spCircle
   sp::proj4string(StartCircle)<- projstring
 
-  PatchCircles[[paste(binsize)]] <- list("UnExplored"=StartCircle,"Explored"=NA)
+#   PatchCircles[[paste(binsize)]] <- list("UnExplored"=StartCircle,"Explored"=NA)
+  PatchCircles[[paste(binsize)]] <- list("Total"=StartCircle,"UnExplored"=StartCircle,"Explored"=NA)
 
   for(dist in seq(2*binsize,maxdist,by=binsize))
   {
@@ -30,7 +31,7 @@ generate_circle_patch <- function(central_point,maxdist=10000,binsize=1000,nptsP
     small <- sampSurf::spCircle(centerPoint=centerPoints,radius=dist-binsize,nptsPerimeter=nptsPerimeter,spUnits=CRS(projstring))$spCircle
     Circle <- rgeos::gDifference(large,small)
     sp::proj4string(Circle) <- projstring
-    PatchCircles[[paste(dist)]] <- list("UnExplored"=Circle,"Explored"=NA)
+    PatchCircles[[paste(dist)]] <- list("Total"=Circle,"UnExplored"=Circle,"Explored"=NA)
   }
   class(PatchCircles)<- "circlepatch"
   return(PatchCircles)

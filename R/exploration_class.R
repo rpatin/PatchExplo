@@ -8,6 +8,7 @@ NULL
 #' Print object of \code{exploration} class
 #'
 #' @rdname exploration
+#' @export
 
 # x <- test.explo
 #
@@ -24,33 +25,38 @@ print.exploration <- function(x){
 }
 
 
-#' Plot object of \code{circlepatch} class
+#' Plot object of \code{exploration} class
 #' @rdname exploration
+#' @export
 
-plot.exploration <- function(x, type = c("marginal", "daily"),wait=T){
+#  x <- test.explo
+plot.exploration <- function(x, type = "marginal",wait=T){
   if (type == "marginal"){
-    plot(x$circlepatches[[1]]$total,main='Day 1',col='red')
+    plot(x$circlepatches[[1]]$total,main='Day 1',col='red',border=rgb(1,1,1,alpha=1))
     wait_next_graph(wait)
     if (x$nday >1){
       for(i in 2:x$nday){
-        plot(x$circlepatches[[i-1]]$total,main=paste("Day ",i,sep=""),col='grey90')
-        plot(x$circlepatches[[i]]$marginal,main=paste("Day ",i,sep=""),col='red',add=T)
+        plot(x$circlepatches[[i-1]]$total,main=paste("Day ",i,sep=""),col='grey50',border=rgb(1,1,1,alpha=1))
+        plot(x$circlepatches[[i]]$marginal,main=paste("Day ",i,sep=""),col='red',border=rgb(1,1,1,alpha=1),add=T)
         wait_next_graph(wait)
       }
     }
   }
   if (type == "daily"){
     for(i in 1:x$nday){
-      plot(x$circlepatches[[i]]$current,main=paste("Day ",i,sep=""),col='red')
+      plot(x$circlepatches[[i]]$current,main=paste("Day ",i,sep=""),col='red',border='white')
       wait_next_graph(wait)
     }
   }
 }
 
-#' Summary of \code{circlepatch} class
+#' Summary of \code{exploration} class
 #' @rdname exploration
 #'
-#'
+#'@importFrom magrittr %>%
+#' @export
+# x <- test.explo
+
 summary.exploration <- function(x){
   df <- plyr::ldply(x$circlepatches,function(y){
     return(plyr::ldply(y,function(z){
@@ -69,29 +75,38 @@ summary.exploration <- function(x){
   return(df.explo)
 }
 
+#' Print method for \code{summary.exploration} object
+#'
+#' Print output
+#' @param x a \code{summary.exploration} object
+#' @export
+
+# x <- summary(test.explo)
+print.summary.exploration <- function(x){
+  str(x,max.level = 1)
+}
+
 #' Plot method for \code{summary.exploration} object
 #'
 #' Used to build its summary
 #' @import ggplot2
 #' @param x a \code{summary.exploration} object
 #'@importFrom magrittr %>%
-
-# x <- summary(test.explo)
-
+#' @export
 plot.summary.exploration <- function(x,xlab="Distance to waterhole",ylab="Explored Area",ncol=2,current=T,marginal=T,wait=T,title=NULL){
   if(current){
-    g <- ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_Explored),stat='identity') + xlab(xlab)+ylab(ylab)+facet_wrap(~day)+ggtitle(title)
+    g <- ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_Explored),stat='identity',width = x$binsize) + xlab(xlab)+ylab(ylab)+facet_wrap(~day)+ggtitle(title)
     gridExtra::grid.arrange(g)
     wait_next_graph(wait)
-    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_ExploredPercent),stat='identity')+ xlab(xlab)+ylab(paste(ylab," (Percent)"))+facet_wrap(~day)+ggtitle(title)
+    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=current_ExploredPercent),stat='identity',width = x$binsize)+ xlab(xlab)+ylab(paste(ylab," (Percent)"))+facet_wrap(~day)+ggtitle(title)
     gridExtra::grid.arrange(g)
     wait_next_graph(wait)
   }
   if(marginal){
-    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=marginal_Explored,fill=factor(day)),stat='identity') + xlab(xlab)+ylab(ylab)+ggtitle(title)
+    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=marginal_Explored,fill=factor(day)),stat='identity',width = x$binsize) + xlab(xlab)+ylab(ylab)+ggtitle(title)
     gridExtra::grid.arrange(g)
     wait_next_graph(wait)
-    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=marginal_ExploredPercent,fill=factor(day)),stat='identity')+ xlab(xlab)+ylab(paste(ylab," (Percent)"))+ggtitle(title)
+    g <-ggplot(x[["areas"]]) + geom_bar(aes(x=as.numeric(distance),y=marginal_ExploredPercent,fill=factor(day)),stat='identity',width = x$binsize)+ xlab(xlab)+ylab(paste(ylab," (Percent)"))+ggtitle(title)
     gridExtra::grid.arrange(g)
   }
 }

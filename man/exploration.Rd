@@ -9,7 +9,7 @@
 \usage{
 \method{print}{exploration}(x)
 
-\method{plot}{exploration}(x, type = c("marginal", "daily"), wait = T)
+\method{plot}{exploration}(x, type = "marginal", wait = T)
 
 \method{summary}{exploration}(x)
 }
@@ -22,8 +22,8 @@ exploration class description
 
 Print object of \code{exploration} class
 
-Plot object of \code{circlepatch} class
+Plot object of \code{exploration} class
 
-Summary of \code{circlepatch} class
+Summary of \code{exploration} class
 }
 
