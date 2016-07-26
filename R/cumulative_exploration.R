@@ -38,7 +38,7 @@
 #
 # test.explo <- explore(data,buffer=buffer,binsize=100,projstring = UTMstring,waterholes = waterholes)
 #
-# plot(test.explo,type="marginal")
+# plot(test.explo,type="marginal",waterhole=pump,buffer=2000)
 # str(test.explo,max.level = 1)
 # explo.summary <- summary(test.explo)
 # plot(explo.summary)

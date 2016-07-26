@@ -52,7 +52,7 @@ wait_next_graph <- function(wait){
 plot_waterholes <- function(x,buffer=NULL){
   if(!is.null(x)){
     if(!is.null(buffer)){
-      plot(rgeos::gBuffer(x,width=buffer))
+      plot(rgeos::gBuffer(x,width=buffer),add=T,lty=2)
     }
     points(x,col="blue",pch=19,cex=1.5,label)
     text(x,label=x@data$name,cex=0.5,pos=4)
