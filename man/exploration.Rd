@@ -9,7 +9,8 @@
 \usage{
 \method{print}{exploration}(x)
 
-\method{plot}{exploration}(x, type = "marginal", wait = T)
+\method{plot}{exploration}(x, type = "marginal", wait = T, title = NULL,
+  waterholes = NULL)
 
 \method{summary}{exploration}(x)
 }
