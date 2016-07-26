@@ -30,7 +30,7 @@ print.exploration <- function(x){
 #' @export
 
 #  x <- test.explo
-plot.exploration <- function(x, type = "marginal",wait=T,title=NULL,waterholes=NULL){
+plot.exploration <- function(x, type = "marginal",wait=T,title=NULL,waterholes=NULL,buffer=NULL){
   if (type == "marginal"){
     plot(x$circlepatches[[1]]$total,main=paste(title," Night 1",sep=""),col='red',border=rgb(1,1,1,alpha=1))
     plot_waterholes(waterholes)

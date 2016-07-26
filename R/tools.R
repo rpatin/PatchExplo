@@ -47,9 +47,13 @@ wait_next_graph <- function(wait){
 #' Plot waterholes with names labeled
 #'
 #' @param x SpatialPointsDataFrame
+#' @param buffer Size of buffer to plot around waterholes
 
-plot_waterholes <- function(x){
+plot_waterholes <- function(x,buffer=NULL){
   if(!is.null(x)){
+    if(!is.null(buffer)){
+      plot(rgeos::gBuffer(x,width=buffer))
+    }
     points(x,col="blue",pch=19,cex=1.5,label)
     text(x,label=x@data$name,cex=0.5,pos=4)
   }
