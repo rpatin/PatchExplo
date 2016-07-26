@@ -43,3 +43,15 @@ prevent_invalid_geometry <- function(x){
 wait_next_graph <- function(wait){
   if (wait) invisible(readline(prompt="Press [enter] to continue"))
 }
+
+#' Plot waterholes with names labeled
+#'
+#' @param x SpatialPointsDataFrame
+
+plot_waterholes <- function(x){
+  if(!is.null(x)){
+    points(x,col="blue",pch=19,cex=1.5,label)
+    text(x,label=x@data$name,cex=0.5,pos=4)
+  }
+  return(NULL)
+}

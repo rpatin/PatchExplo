@@ -18,7 +18,7 @@
 #' @examples
 #' explore(data,buffer=100,maxdist=10000,binsize=1000,projstring,waterholes)
 #' @export
-
+#
 # library(rgdal)
 # library(sp)
 #
@@ -31,12 +31,12 @@
 # proj4string(pump)=UTMstring
 # waterholes <- pump
 #
-# buffer=200
+# buffer=100
 # maxdist=10000
 # binsize=100
 # projstring = UTMstring
 #
-# test.explo <- explore(data,buffer=200,binsize=100,projstring = UTMstring,waterholes = waterholes)
+# test.explo <- explore(data,buffer=buffer,binsize=100,projstring = UTMstring,waterholes = waterholes)
 #
 # plot(test.explo,type="marginal")
 # str(test.explo,max.level = 1)
@@ -46,65 +46,69 @@
 explore <- function(data,buffer=100,maxdist=10000,binsize=1000,projstring,waterholes)
 {
   listindex <- unique(data$index)
-  if (any(diff(sort(listindex)) != 1)) stop("There is a gap in index")
-  central_point <- waterholes[which(waterholes@data$name==as.character(dplyr::first(data$name))),]
+  if (any(diff(sort(listindex)) != 1)) {
+    cat("There is a gap in index")
+    return(NULL)
+  } else {
+    central_point <- waterholes[which(waterholes@data$name==as.character(dplyr::first(data$name))),]
 
-  BeginPatch <- generate_circle_patch(central_point,projstring=projstring,maxdist = maxdist,binsize = binsize)
+    BeginPatch <- generate_circle_patch(central_point,projstring=projstring,maxdist = maxdist,binsize = binsize)
 
-  x <- list("circlepatches"=list(),
-                      "nday"=length(listindex),
-                      "buffer"=buffer,
-                      "binsize"=binsize,
-                      "maxdist"=maxdist,
-                      "waterhole"=central_point,
-                      "data"=data)
-  class(x) <- 'exploration'
+    x <- list("circlepatches"=list(),
+              "nday"=length(listindex),
+              "buffer"=buffer,
+              "binsize"=binsize,
+              "maxdist"=maxdist,
+              "waterhole"=central_point,
+              "data"=data)
+    class(x) <- 'exploration'
 
-  night <- dplyr::filter(data,night=="night",index==listindex[1])
-  ExploredDay <- explore_one_night(night=night,
-                                   central_point=central_point,
-                                   already_explored=BeginPatch,
-                                   buffer=buffer,
-                                   projstring=projstring,
-                                   marginal=F)
+    night <- dplyr::filter(data,night=="night",index==listindex[1])
+    ExploredDay <- explore_one_night(night=night,
+                                     central_point=central_point,
+                                     already_explored=BeginPatch,
+                                     buffer=buffer,
+                                     projstring=projstring,
+                                     marginal=F)
 
-  x$circlepatches[[1]] <- list("total"=ExploredDay,
-                               "current"=ExploredDay,
-                               "marginal"=ExploredDay)
+    x$circlepatches[[1]] <- list("total"=ExploredDay,
+                                 "current"=ExploredDay,
+                                 "marginal"=ExploredDay)
 
-  CumulativeExploredDay <- ExploredDay
-  if(length(listindex)>1){
-    for(i in 2:length(listindex)){
-      # print(i)
-      night <- dplyr::filter(data,night=="night",index==listindex[i])
-      MarginalExploredDay <- explore_one_night(night=night,
-                                               central_point=central_point,
-                                               already_explored=CumulativeExploredDay,
-                                               buffer=buffer,
-                                               projstring=projstring,
-                                               marginal=T)
-
-      CumulativeExploredDay <- explore_one_night(night=night,
+    CumulativeExploredDay <- ExploredDay
+    if(length(listindex)>1){
+      for(i in 2:length(listindex)){
+        # print(i)
+        night <- dplyr::filter(data,night=="night",index==listindex[i])
+        MarginalExploredDay <- explore_one_night(night=night,
                                                  central_point=central_point,
                                                  already_explored=CumulativeExploredDay,
                                                  buffer=buffer,
                                                  projstring=projstring,
-                                                 marginal=F)
+                                                 marginal=T)
 
-      ExploredDay <- explore_one_night(night=night,
-                                       central_point=central_point,
-                                       already_explored=BeginPatch,
-                                       buffer=buffer,
-                                       projstring=projstring,
-                                       marginal=F)
+        CumulativeExploredDay <- explore_one_night(night=night,
+                                                   central_point=central_point,
+                                                   already_explored=CumulativeExploredDay,
+                                                   buffer=buffer,
+                                                   projstring=projstring,
+                                                   marginal=F)
 
-      x$circlepatches[[i]] <- list("total"=CumulativeExploredDay,
-                                   "current"=ExploredDay,
-                                   "marginal"=MarginalExploredDay)
+        ExploredDay <- explore_one_night(night=night,
+                                         central_point=central_point,
+                                         already_explored=BeginPatch,
+                                         buffer=buffer,
+                                         projstring=projstring,
+                                         marginal=F)
+
+        x$circlepatches[[i]] <- list("total"=CumulativeExploredDay,
+                                     "current"=ExploredDay,
+                                     "marginal"=MarginalExploredDay)
+      }
     }
+    names(x$circlepatches) <- seq(1,x$nday)
+    return(x)
   }
-  names(x$circlepatches) <- seq(1,x$nday)
-  return(x)
 }
 #' Analyse exploration around a central place for a single night
 #'
@@ -142,10 +146,10 @@ explore_one_night <- function(night,central_point,already_explored,buffer=100,pr
   #   plot(newExplored,col='orange',add=T)
   #   plot(zone$Explored,col='yellow')
   # already_explored <- ExploredDay
-  # zone <- already_explored[[1]]
-
+  # zone <- already_explored[[69]]
+  # plot(zone$UnExplored,add=T,col='red')
   Explored.list <- lapply(already_explored,function(zone){
-    # plot(zone$UnExplored,add=T,col='red')
+    # plot(zone$UnExplored,add=T,col='grey')
     if (class(zone$UnExplored) != "logical")
     {
       # plot(zone$UnExplored,add=T,col='red')
@@ -156,8 +160,8 @@ explore_one_night <- function(night,central_point,already_explored,buffer=100,pr
 
       newExplored = rgeos::gIntersection(zone$UnExplored,SplineBuffer)
 
-      # plot(newUnexplored,add=T,col='grey')
-      # plot(newExplored,add=T,col='red')
+      # plot(newUnexplored,add=T,col='blue')
+      # plot(newExplored,add=T,col='green')
       if(is.null(newUnexplored)){
         newUnexplored <- NA
       } else {
@@ -178,7 +182,7 @@ explore_one_night <- function(night,central_point,already_explored,buffer=100,pr
             newExplored <- newExplored@polyobj
           }
           if (marginal == T){
-            newExplored <- rgeos::gDifference(newExplored,zone$Explored)
+            # newExplored <- rgeos::gDifference(newExplored,zone$Explored)
             newExplored <- prevent_invalid_geometry(newExplored)
           } else {
             newExplored <-  rgeos::gUnion(newExplored,zone$Explored)

@@ -30,21 +30,24 @@ print.exploration <- function(x){
 #' @export
 
 #  x <- test.explo
-plot.exploration <- function(x, type = "marginal",wait=T){
+plot.exploration <- function(x, type = "marginal",wait=T,title=NULL,waterholes=NULL){
   if (type == "marginal"){
-    plot(x$circlepatches[[1]]$total,main='Day 1',col='red',border=rgb(1,1,1,alpha=1))
+    plot(x$circlepatches[[1]]$total,main=paste(title," Night 1",sep=""),col='red',border=rgb(1,1,1,alpha=1))
+    plot_waterholes(waterholes)
     wait_next_graph(wait)
     if (x$nday >1){
       for(i in 2:x$nday){
-        plot(x$circlepatches[[i-1]]$total,main=paste("Day ",i,sep=""),col='grey50',border=rgb(1,1,1,alpha=1))
-        plot(x$circlepatches[[i]]$marginal,main=paste("Day ",i,sep=""),col='red',border=rgb(1,1,1,alpha=1),add=T)
+        plot(x$circlepatches[[i-1]]$total,main=paste(title," Night ",i,sep=""),col='grey50',border=rgb(1,1,1,alpha=1))
+        plot(x$circlepatches[[i]]$marginal,main=paste(title," Night ",i,sep=""),col='red',border=rgb(1,1,1,alpha=1),add=T)
+        plot_waterholes(waterholes)
         wait_next_graph(wait)
       }
     }
   }
   if (type == "daily"){
     for(i in 1:x$nday){
-      plot(x$circlepatches[[i]]$current,main=paste("Day ",i,sep=""),col='red',border='white')
+      plot(x$circlepatches[[i]]$current,main=paste(title," Night ",i,sep=""),col='red',border='white')
+      plot_waterholes(waterholes)
       wait_next_graph(wait)
     }
   }
